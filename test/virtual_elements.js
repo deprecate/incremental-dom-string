@@ -1,13 +1,19 @@
+import assert from 'assert';
 import {
   patch,
   elementOpen,
-  elementVoid,
+  elementOpenStart,
+  elementOpenEnd,
   elementClose,
+  elementVoid,
   text,
 } from '../src/virtual_elements.js';
 
-describe('incremental-dom-string', function() {
-  it('foo', function() {
-    console.log(patch, elementOpen, elementVoid, elementClose, text);
+describe('element creation', () => {
+  it('when creating a single node with text', function() {
+    elementOpen('div');
+      text('Hello world');
+    elementClose('div');
+    assert.strictEqual('', '<div>Hello world</div>');
   });
 });
