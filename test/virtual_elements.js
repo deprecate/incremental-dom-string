@@ -1,12 +1,12 @@
 import assert from 'assert';
 import {
-  patch,
-  elementOpen,
   elementOpenStart,
   elementOpenEnd,
-  elementClose,
+  elementOpen,
   elementVoid,
+  elementClose,
   text,
+  attr,
 } from '../src/virtual_elements.js';
 
 describe('element creation', () => {
