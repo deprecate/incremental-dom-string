@@ -7,12 +7,12 @@ import {
   elementClose,
   text,
   attr,
+  patch,
   getOutput
 } from '../src/virtual_elements.js';
 
 describe('element creation', () => {
   it('when creating a single node with text', function() {
-
     elementOpen('div');
       text('Hello world');
     elementClose('div');
@@ -48,8 +48,7 @@ describe('element creation', () => {
     assert.strictEqual(getOutput(), '<div id="test-div">Test text</div>');
   });
 
-  it('when creating a single node several attributes', function() {
-
+  it('when creating a single node with several attributes', function() {
     const attrs = [
       'id', 'test-id',
       'name', 'test-name',
@@ -89,5 +88,60 @@ describe('element creation', () => {
     elementVoid('input', null, ['type', 'text']);
 
     assert.strictEqual(getOutput(), '<input type="text"></input>');
+  });
+
+  it('when patching a node', function() {
+    elementOpen('main', null, ['id', 'main-element', 'data-foo', 'bar']);
+      elementOpen('section');
+      elementClose('section');
+    elementClose('main');
+
+    assert.strictEqual(getOutput(),
+      '<main id="main-element" data-foo="bar"><section></section></main>');
+
+    /* eslint-disable */
+    function createList(n = 1) {
+      elementOpen('ul', null, ['id', 'test-ul']);
+      for (let i = 0; i < n; i++) {
+        elementOpen('li', null, ['id', `test-li-${i}`]);
+          text(`List item ${i}`);
+        elementClose('li');
+      }
+      elementClose('ul');
+    }
+
+    patch(getOutput(), function() {
+      createList(10);
+    });
+
+    let expected = ['<main id="main-element" data-foo="bar">',
+      '<ul id="test-ul">',
+      '<li id="test-li-0">List item 0</li>',
+      '<li id="test-li-1">List item 1</li>',
+      '<li id="test-li-2">List item 2</li>',
+      '<li id="test-li-3">List item 3</li>',
+      '<li id="test-li-4">List item 4</li>',
+      '<li id="test-li-5">List item 5</li>',
+      '<li id="test-li-6">List item 6</li>',
+      '<li id="test-li-7">List item 7</li>',
+      '<li id="test-li-8">List item 8</li>',
+      '<li id="test-li-9">List item 9</li>',
+      '</ul>', '</main>'].join('');
+
+    assert.strictEqual(getOutput(), expected);
+
+
+    patch(getOutput(), function() {
+      createList(5);
+    });
+
+    expected = ['<main id="main-element" data-foo="bar">',
+      '<ul id="test-ul">',
+      '<li id="test-li-0">List item 0</li>',
+      '<li id="test-li-1">List item 1</li>',
+      '<li id="test-li-2">List item 2</li>',
+      '<li id="test-li-3">List item 3</li>',
+      '<li id="test-li-4">List item 4</li>',
+      '</ul>', '</main>'].join('');
   });
 });
