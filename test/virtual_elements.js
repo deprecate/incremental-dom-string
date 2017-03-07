@@ -110,11 +110,13 @@ describe('element creation', () => {
       elementClose('ul');
     }
 
-    patch(getOutput(), function() {
-      createList(10);
+    const node = {innerHTML: ''};
+
+    patch(node, function() {
+      return createList(10);
     });
 
-    let expected = ['<main id="main-element" data-foo="bar">',
+    let expected = [
       '<ul id="test-ul">',
       '<li id="test-li-0">List item 0</li>',
       '<li id="test-li-1">List item 1</li>',
@@ -126,22 +128,24 @@ describe('element creation', () => {
       '<li id="test-li-7">List item 7</li>',
       '<li id="test-li-8">List item 8</li>',
       '<li id="test-li-9">List item 9</li>',
-      '</ul>', '</main>'].join('');
+      '</ul>'].join('');
 
-    assert.strictEqual(getOutput(), expected);
+    assert.strictEqual(node.innerHTML, expected);
 
 
-    patch(getOutput(), function() {
+    patch(node, function() {
       createList(5);
     });
 
-    expected = ['<main id="main-element" data-foo="bar">',
+    expected = [
       '<ul id="test-ul">',
       '<li id="test-li-0">List item 0</li>',
       '<li id="test-li-1">List item 1</li>',
       '<li id="test-li-2">List item 2</li>',
       '<li id="test-li-3">List item 3</li>',
       '<li id="test-li-4">List item 4</li>',
-      '</ul>', '</main>'].join('');
+      '</ul>'].join('');
+
+    assert.strictEqual(node.innerHTML, expected);
   });
 });

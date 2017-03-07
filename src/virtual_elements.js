@@ -1,4 +1,3 @@
-import { parseTags } from './parser';
 
 let elementDummy_ = {
   addEventListener() {}
@@ -133,21 +132,13 @@ const elementOpenStart = function(nameOrCtor, key, statics) {
   }
 };
 
+const noop = function() {};
+
 const patch = function(node, description, data) {
-
-  // keep a reference to the node to restore it later
-  const prev = parseTags(node);
-  const keys = Object.keys(prev.tag.attribs);
-  let statics = [];
-  for (let i = 0, l = keys.length; i < l; i++) {
-    statics.push(keys[i]);
-    statics.push(prev.tag.attribs[keys[i]]);
-  }
-
-  elementOpen(prev.tag.name, null, statics);
-  const fn = typeof description === 'function' ? description : function() {};
-  fn(data);
-  elementClose(prev.tag.name);
+  const fn = typeof description === 'function' ? description : noop;
+  description(data);
+  const output = getOutput();
+  node.innerHTML = output;
 };
 
 /**
