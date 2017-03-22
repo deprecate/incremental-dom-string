@@ -17,7 +17,9 @@ const push_ = (token, close = false) => {
 };
 
 const getOutput = () => {
-  return output_.html;
+  let tmp = output_.html;
+  output_.html = '';
+  return tmp;
 };
 
 const attrsArray_ = (data) => {
