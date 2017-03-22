@@ -17,7 +17,7 @@ const push_ = (token, close = false) => {
 };
 
 const getOutput = () => {
-  let tmp = output_.html;
+  let tmp = output_.html.slice();
   output_.html = '';
   return tmp;
 };

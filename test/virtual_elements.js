@@ -161,4 +161,23 @@ describe('element creation', () => {
 
     assert.strictEqual(node.innerHTML, expected);
   });
+
+  it('should flush the output', function() {
+    elementOpen('main', null, ['id', 'main-element', 'data-foo', 'bar']);
+      elementOpen('section');
+      elementClose('section');
+    elementClose('main');
+
+    assert.strictEqual(getOutput(),
+      '<main id="main-element" data-foo="bar"><section></section></main>');
+
+    assert.strictEqual(getOutput(), '');
+
+    elementOpen('div', null, ['id', 'test-div']);
+      text('Hello')
+    elementClose('div');
+
+    assert.strictEqual(getOutput(), '<div id="test-div">Hello</div>');
+    assert.strictEqual(getOutput(), '');
+  });
 });
