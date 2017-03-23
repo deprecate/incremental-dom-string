@@ -28,7 +28,6 @@ const attrsArray_ = (data) => {
   }
 };
 
-
 /***
  * Defines a virtual attribute at this point of the DOM. This is only valid
  * when called between elementOpenStart and elementOpenEnd.
@@ -142,7 +141,6 @@ const patch = function(node, description, data) {
   // if (!node.tagName) {
   //   return;
   // }
-
   // const tag = node.tagName.toLowerCase();
   // const attrs = [];
   // if (node.attributes) {
@@ -151,14 +149,16 @@ const patch = function(node, description, data) {
   //     attrs.push(node.attributes[i].value);
   //   }
   // }
-
   // elementOpen(tag, null, attrs);
-  description(data);
   // elementClose(tag);
 
-  const output = getOutput();
-  node.innerHTML = output;
+  description(data);
+  node.innerHTML = getOutput();
+  return node;
 };
+
+const patchInner = patch;
+const patchOuter = patch;
 
 /**
  * Declares a virtual Text at this point in the document.
@@ -190,5 +190,7 @@ export {
   text,
   attr,
   patch,
+  patchInner,
+  patchOuter,
   getOutput
 };
