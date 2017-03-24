@@ -91,6 +91,8 @@ describe('element creation', () => {
   });
 
   it('when patching a node', function() {
+    debugger;
+
     elementOpen('main', null, ['id', 'main-element', 'data-foo', 'bar']);
       elementOpen('section');
       elementClose('section');
@@ -171,13 +173,13 @@ describe('element creation', () => {
     assert.strictEqual(getOutput(),
       '<main id="main-element" data-foo="bar"><section></section></main>');
 
-    assert.strictEqual(getOutput(), '');
+    assert.strictEqual(getOutput(true), '');
 
     elementOpen('div', null, ['id', 'test-div']);
       text('Hello')
     elementClose('div');
 
     assert.strictEqual(getOutput(), '<div id="test-div">Hello</div>');
-    assert.strictEqual(getOutput(), '');
+    assert.strictEqual(getOutput(true), '');
   });
 });

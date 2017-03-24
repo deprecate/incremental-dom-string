@@ -1,13 +1,18 @@
 
-let elementDummy_ = {
+const noop = function() {};
+
+let outputTarget_ = {
   addEventListener() {}
 };
 
 let buffer_ = [];
 let output_ = {};
 let nestingCount_ = 1;
+let keepOpen_ = false;
+let prettyPrint_ = '';
+let doneCallback_;
 
-const push_ = (token, close = false) => {
+const push_ = function(token, close = false) {
   buffer_.push(token);
 
   if (close) {
@@ -16,13 +21,15 @@ const push_ = (token, close = false) => {
   }
 };
 
-const getOutput = () => {
-  let tmp = output_.html.slice();
-  output_.html = '';
+const getOutput = function(flush = false) {
+  if (flush) {
+    output_.html = '';
+  }
+  const tmp = output_.html.slice();
   return tmp;
 };
 
-const attrsArray_ = (data) => {
+const attrsArray_ = function(data) {
   for (let i = 0, l = data.length; i < l; i += 2) {
     attr(data[i], data[i + 1]);
   }
@@ -53,7 +60,7 @@ const elementClose = function(nameOrCtor) {
   }
   push_(`</${nameOrCtor}>`, close);
 
-  return elementDummy_;
+  return outputTarget_;
 };
 
 /**
@@ -107,7 +114,7 @@ const elementOpenEnd = function() {
   push_('>');
   nestingCount_++;
 
-  return elementDummy_;
+  return outputTarget_;
 };
 
 /**
@@ -133,32 +140,27 @@ const elementOpenStart = function(nameOrCtor, key, statics) {
   }
 };
 
-const noop = function() {};
-
 const patch = function(node, description, data) {
+
   const fn = typeof description === 'function' ? description : noop;
+  if (typeof node === 'function') {
+    node(() => fn(data));
+  } else {
+    fn(data);
+  }
 
-  // if (!node.tagName) {
-  //   return;
-  // }
-  // const tag = node.tagName.toLowerCase();
-  // const attrs = [];
-  // if (node.attributes) {
-  //   for (let i = 0, l = node.attributes.length; i < l; i++) {
-  //     attrs.push(node.attributes[i].name);
-  //     attrs.push(node.attributes[i].value);
-  //   }
-  // }
-  // elementOpen(tag, null, attrs);
-  // elementClose(tag);
 
-  description(data);
-  node.innerHTML = getOutput();
-  return node;
+  const output = getOutput();
+  if (Object.prototype.hasOwnProperty.call(node, 'innerHTML')) {
+    node.innerHTML = output;
+  }
+  if (doneCallback_) {
+    doneCallback_(output_);
+  }
 };
 
-const patchInner = patch;
 const patchOuter = patch;
+const patchInner = patch;
 
 /**
  * Declares a virtual Text at this point in the document.
@@ -181,6 +183,22 @@ const text = function(value, var_args) {
   push_('' + formatted);
 };
 
+const setOutput = function(prettyPrint, output, doneCallback, keepOpen) {
+  prettyPrint_ = prettyPrint;
+  output_ = output ? output : {};
+  doneCallback_ = typeof callback === 'function' ? callback : undefined;
+  keepOpen_ = keepOpen;
+};
+
+
+const setOutputTarget = function (obj, merge) {
+  if (merge) {
+    Object.assign(outputTarget_, obj);
+  } else {
+    outputTarget_ = obj;
+  }
+};
+
 export {
   elementOpenStart,
   elementOpenEnd,
@@ -192,5 +210,7 @@ export {
   patch,
   patchInner,
   patchOuter,
-  getOutput
+  getOutput,
+  setOutput,
+  setOutputTarget,
 };
