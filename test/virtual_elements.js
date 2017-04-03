@@ -29,7 +29,7 @@ describe('element creation', () => {
     assert.strictEqual(getOutput(), '<div><span>Hello world 2</span></div>');
   });
 
-  it('when creating a single node with several child nodes with text', function() {
+  it('when creating a single node with multiple child nodes with text', function() {
     elementOpen('div');
       elementOpen('p');
         text('First child');
@@ -48,7 +48,7 @@ describe('element creation', () => {
     assert.strictEqual(getOutput(), '<div id="test-div">Test text</div>');
   });
 
-  it('when creating a single node with several attributes', function() {
+  it('when creating a single node with multiple attributes', function() {
     const attrs = [
       'id', 'test-id',
       'name', 'test-name',
@@ -90,8 +90,12 @@ describe('element creation', () => {
     assert.strictEqual(getOutput(), '<input type="text"></input>');
   });
 
+  it('when creating a void node with various attributes', function() {
+    elementVoid('div', null, ['id', 'test-id', 'name', 'test-name', 'data-test', 'test']);
+    assert.strictEqual(getOutput(), '<div id="test-id" name="test-name" data-test="test"></div>');
+  });
+
   it('when patching a node', function() {
-    debugger;
 
     elementOpen('main', null, ['id', 'main-element', 'data-foo', 'bar']);
       elementOpen('section');
@@ -182,4 +186,5 @@ describe('element creation', () => {
     assert.strictEqual(getOutput(), '<div id="test-div">Hello</div>');
     assert.strictEqual(getOutput(true), '');
   });
+
 });
