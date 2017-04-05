@@ -12,7 +12,10 @@ const noop = function() {};
  */
 let buffer_ = [];
 
-let output_ = {};
+/**
+ * A string used to print the current output
+ */
+let output_ = '';
 
 /**
  * A counter to keep track of the nesting level when generating DOM strings.
@@ -30,7 +33,7 @@ const push_ = function(token, close = false) {
   buffer_.push(token);
 
   if (close) {
-    output_.html = buffer_.slice().join('');
+    output_ = buffer_.slice().join('');
     buffer_ = [];
   }
 };
@@ -42,10 +45,10 @@ const push_ = function(token, close = false) {
  * @return {string} The constructed DOM string.
  */
 const getOutput = function(flush = false) {
+  const tmp = output_.slice();
   if (flush) {
-    output_.html = '';
+    return output_ = '';
   }
-  const tmp = output_.html.slice();
   return tmp;
 };
 
@@ -108,9 +111,8 @@ const elementVoid = function(nameOrCtor, key, statics, var_args) {
   return elementClose(nameOrCtor);
 };
 
-
 /**
- * @param {NameOrCtorDef} nameOrCtor The Element's tag or constructor.
+ * @param {!string} nameOrCtor The Element's tag or constructor.
  * @param {?string=} key The key used to identify this element. This can be an
  *     empty string, but performance may be better if a unique value is used
  *     when iterating over an array of items.
@@ -122,13 +124,10 @@ const elementVoid = function(nameOrCtor, key, statics, var_args) {
  * @return {void} Nothing.
  */
 const elementOpen = function(nameOrCtor, key, statics, var_args) {
-
   elementOpenStart(nameOrCtor, key, statics);
-
   if (Array.isArray(var_args)) {
     attrsArray_(var_args);
   }
-
   return elementOpenEnd();
 };
 
@@ -148,7 +147,7 @@ const elementOpenEnd = function() {
  * like elementOpen, but the attributes are defined using the attr function
  * rather than being passed as arguments. Must be folllowed by 0 or more calls
  * to attr, then a call to elementOpenEnd.
- * @param {NameOrCtorDef} nameOrCtor The Element's tag or constructor.
+ * @param {string} nameOrCtor The Element's tag or constructor.
  * @param {?string=} key The key used to identify this element. This can be an
  *     empty string, but performance may be better if a unique value is used
  *     when iterating over an array of items.
@@ -159,7 +158,6 @@ const elementOpenEnd = function() {
  */
 const elementOpenStart = function(nameOrCtor, key, statics) {
   push_(`<${nameOrCtor}`);
-
   if (Array.isArray(statics)) {
     attrsArray_(statics);
   }
@@ -169,7 +167,7 @@ const elementOpenStart = function(nameOrCtor, key, statics) {
  * Patches an Element with the the provided function. Exactly one top level
  * element call should be made corresponding to `node`.
  *
- * @param {!Element} node The Element where the patch should start.
+ * @param {?object} node The Element where the patch should start.
  * @param {!function(T)} fn A function containing open/close/etc. calls that
  *     describe the DOM. This should have at most one top level element call.
  * @param {T=} data An argument passed to fn to represent DOM state.
@@ -184,6 +182,7 @@ const patch = function(node, description, data) {
   }
 
   const output = getOutput();
+  output_ = '';
   if (Object.prototype.hasOwnProperty.call(node, 'innerHTML')) {
     node.innerHTML = output;
   }

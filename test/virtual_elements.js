@@ -102,8 +102,10 @@ describe('element creation', () => {
       elementClose('section');
     elementClose('main');
 
-    assert.strictEqual(getOutput(),
-      '<main id="main-element" data-foo="bar"><section></section></main>');
+    const output = getOutput();
+    let expected = '<main id="main-element" data-foo="bar"><section></section></main>';
+
+    assert.strictEqual(output, expected);
 
     /* eslint-disable */
     function createList(n = 1) {
@@ -116,26 +118,13 @@ describe('element creation', () => {
       elementClose('ul');
     }
 
-    const node = {
-      innerHTML: '',
-      tagName: 'MAIN',
-      attributes: [
-        {
-          name: 'id',
-          value: 'main-element'
-        },
-        {
-          name: 'data-foo',
-          value: 'bar'
-        }
-      ]
-    };
+    const node = {innerHTML: ''};
 
     patch(node, function() {
       return createList(10);
     });
 
-    let expected = [
+    expected = [
       '<ul id="test-ul">',
       '<li id="test-li-0">List item 0</li>',
       '<li id="test-li-1">List item 1</li>',
@@ -150,7 +139,6 @@ describe('element creation', () => {
       '</ul>'].join('');
 
     assert.strictEqual(node.innerHTML, expected);
-
 
     patch(node, function() {
       createList(5);
