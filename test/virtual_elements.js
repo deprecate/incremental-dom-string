@@ -12,7 +12,21 @@ import {
 } from '../src/virtual_elements.js';
 
 describe('element creation', () => {
-  it('when creating a single node with text', function() {
+
+  const findAttribute = (node, attr, check = true) => {
+    const data = new RegExp(attr + '="(\\w+)"');
+    const match = node.innerHTML.match(data);
+
+    if (check) {
+      assert.ok(match !== null);
+      assert.ok(Array.isArray(match));
+      assert.strictEqual(match.length, 2);
+    }
+
+    return match;
+  };
+
+  it('when creating a single node with text', () => {
     elementOpen('div');
       text('Hello world');
     elementClose('div');
@@ -20,7 +34,7 @@ describe('element creation', () => {
     assert.strictEqual(getOutput(), '<div>Hello world</div>');
   });
 
-  it('when creating a single node with a child node with text', function() {
+  it('when creating a single node with a child node with text', () => {
     elementOpen('div');
       elementOpen('span');
         text('Hello world 2');
@@ -29,7 +43,7 @@ describe('element creation', () => {
     assert.strictEqual(getOutput(), '<div><span>Hello world 2</span></div>');
   });
 
-  it('when creating a single node with multiple child nodes with text', function() {
+  it('when creating a single node with multiple child nodes with text', () => {
     elementOpen('div');
       elementOpen('p');
         text('First child');
@@ -41,14 +55,14 @@ describe('element creation', () => {
     assert.strictEqual(getOutput(), '<div><p>First child</p><span>Second child</span></div>');
   });
 
-  it('when creating a single node with attributes', function() {
+  it('when creating a single node with attributes', () => {
     elementOpen('div', null, ['id', 'test-div']);
       text('Test text');
     elementClose('div');
     assert.strictEqual(getOutput(), '<div id="test-div">Test text</div>');
   });
 
-  it('when creating a single node with multiple attributes', function() {
+  it('when creating a single node with multiple attributes', () => {
     const attrs = [
       'id', 'test-id',
       'name', 'test-name',
@@ -66,7 +80,7 @@ describe('element creation', () => {
     assert.strictEqual(getOutput(), expected);
   });
 
-  it('when creating a single node with several child nodes with attributes and text', function() {
+  it('when creating a single node with several child nodes with attributes and text', () => {
     elementOpen('div');
       elementOpen('span', null, ['name', 'span-name', 'id', 'span-id']);
         text('Foo');
@@ -84,18 +98,18 @@ describe('element creation', () => {
     assert.strictEqual(getOutput(), expected);
   });
 
-  it('when creating a void node', function() {
+  it('when creating a void node', () => {
     elementVoid('input', null, ['type', 'text']);
 
     assert.strictEqual(getOutput(), '<input type="text"></input>');
   });
 
-  it('when creating a void node with various attributes', function() {
+  it('when creating a void node with various attributes', () => {
     elementVoid('div', null, ['id', 'test-id', 'name', 'test-name', 'data-test', 'test']);
     assert.strictEqual(getOutput(), '<div id="test-id" name="test-name" data-test="test"></div>');
   });
 
-  it('when patching a node', function() {
+  it('when patching a node', () => {
 
     elementOpen('main', null, ['id', 'main-element', 'data-foo', 'bar']);
       elementOpen('section');
@@ -120,7 +134,7 @@ describe('element creation', () => {
 
     const node = {innerHTML: ''};
 
-    patch(node, function() {
+    patch(node, () => {
       return createList(10);
     });
 
@@ -140,7 +154,7 @@ describe('element creation', () => {
 
     assert.strictEqual(node.innerHTML, expected);
 
-    patch(node, function() {
+    patch(node, () => {
       createList(5);
     });
 
@@ -156,7 +170,7 @@ describe('element creation', () => {
     assert.strictEqual(node.innerHTML, expected);
   });
 
-  it('should flush the output', function() {
+  it('should flush the output', () => {
     elementOpen('main', null, ['id', 'main-element', 'data-foo', 'bar']);
       elementOpen('section');
       elementClose('section');
@@ -173,6 +187,124 @@ describe('element creation', () => {
 
     assert.strictEqual(getOutput(), '<div id="test-div">Hello</div>');
     assert.strictEqual(getOutput(true), '');
+  });
+
+  describe('with patch', () => {
+
+    let el = {innerHTML: ''};
+
+    beforeEach(() => {
+      patch(el, () => {
+        elementVoid('div', 'key', [
+            'id', 'someId',
+            'class', 'someClass',
+            'data-custom', 'custom'
+        ],
+          'data-foo', 'Hello',
+          'data-bar', 'World')
+      });
+    });
+
+    it('should render with the specificed tag', () => {
+
+      const expected = ['<div id="someId" ',
+        'class="someClass" data-custom="custom" ',
+        'data-foo="Hello" data-bar="World"></div>'
+      ].join('');
+
+      assert.strictEqual(el.innerHTML, expected);
+    });
+
+    it('should render with static attributes', () => {
+
+      const matchId = findAttribute(el, 'id');
+      assert.strictEqual(matchId[1], 'someId');
+
+      const matchClass = findAttribute(el, 'class');
+      assert.strictEqual(matchClass[1], 'someClass');
+
+      const matchData = findAttribute(el, 'data-custom');
+      assert.strictEqual(matchData[1], 'custom');
+    });
+
+    it('should render with dynamic attributes', () => {
+      let matchData = findAttribute(el, 'data-foo');
+      assert.strictEqual(matchData[1], 'Hello');
+
+      matchData = findAttribute(el, 'data-bar');
+      assert.strictEqual(matchData[1], 'World');
+    });
+  });
+
+  it('should allow creation without static attributes', () => {
+    const node = {innerHTML: ''};
+    patch(node, () => {
+      elementVoid('div', null, null, 'id', 'test');
+    });
+    assert.strictEqual(node.innerHTML, '<div id="test"></div>');
+  });
+
+  describe('with conditional attributes', () => {
+
+    function render(obj) {
+      elementOpenStart('div');
+      if (obj.key) {
+        attr('data-expanded', obj.key);
+      }
+      elementOpenEnd();
+      elementClose('div');
+    }
+
+    it('should be present when specified', () => {
+      const node =  {innerHTML: ''};
+
+      patch(node, () => render({key: 'hello'}));
+
+      const matchData = findAttribute(node, 'data-expanded');
+      assert.strictEqual(matchData[1], 'hello');
+    });
+
+    it('should not be present when not specified', () => {
+      const node =  {innerHTML: ''};
+
+      patch(node, () => render({key: false}));
+
+      const matchData = findAttribute(node, 'data-expanded', false);
+      assert.ok(matchData === null);
+      assert.strictEqual(node.innerHTML, '<div></div>');
+    });
+
+    it('should update output when changed', () => {
+      const node =  {innerHTML: ''};
+
+      patch(node, () => render({key: 'foo'}));
+      patch(node, () => render({key: 'bar'}));
+
+      const matchData = findAttribute(node, 'data-expanded');
+      assert.strictEqual(matchData[1], 'bar');
+    });
+  });
+
+  describe('escaping attributes', () => {
+    let node;
+
+    beforeEach(() => {
+      node = {innerHTML: ''};
+    });
+
+    it('should escape < and >', () => {
+      patch(node, () => {
+        elementVoid('div', null, ['id', '<script src="bad.js"></script>']);
+      });
+      assert.notStrictEqual(node.innerHTML, '<div id="<script src="\bad.js\"></script>"></div>');
+    });
+
+    it('should escape &', () => {
+      patch(node, () => {
+        elementVoid('div', null, ['id', '&foo&bar']);
+      });
+      assert.strictEqual(node.innerHTML, '<div id="&amp;foo&amp;bar"></div>');
+    });
   });
 
 });

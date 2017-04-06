@@ -1,4 +1,3 @@
-
 /**
  * A noop function that can be used when no
  * callback function is passed to patch
@@ -33,7 +32,7 @@ const push_ = function(token, close = false) {
   buffer_.push(token);
 
   if (close) {
-    output_ = buffer_.slice().join('');
+    output_ = buffer_.join('');
     buffer_ = [];
   }
 };
@@ -45,11 +44,8 @@ const push_ = function(token, close = false) {
  * @return {string} The constructed DOM string.
  */
 const getOutput = function(flush = false) {
-  const tmp = output_.slice();
-  if (flush) {
-    return output_ = '';
-  }
-  return tmp;
+  output_ = flush ? '' : output_;
+  return output_;
 };
 
 /**
@@ -64,6 +60,34 @@ const attrsArray_ = function(data) {
   }
 };
 
+/**
+ * A map of html entities to strings
+ */
+const entities_ = {
+  '&':  '&amp;',
+  '<':  '&lt;',
+  '>':  '&gt;',
+  '\\': '&quot;',
+  '\'': '&#39;'
+};
+
+/**
+ * Converts the given entity to the corresponding string.
+ *
+ * @param {string} str The string to convert.
+ * @return {string} The entitie's corresponding string or the string itself
+ *                  if nothing was found.
+ */
+const convertEntity_ = str => entities_[str] || str;
+
+/**
+ * Escapes entities for the given string.
+ *
+ * @param {string} str The string to convert.
+ * @return {string} The escaped string.
+ */
+const escapeTags_ = str => str.replace(/[&<>]/g, convertEntity_);
+
 /***
  * Defines a virtual attribute at this point of the DOM. This is only valid
  * when called between elementOpenStart and elementOpenEnd.
@@ -73,6 +97,11 @@ const attrsArray_ = function(data) {
  * @return {void} Nothing.
  */
 const attr = function(name, value) {
+
+  name = escapeTags_(name);
+  value = escapeTags_(value);
+
+
   push_(` ${name}="${value}"`);
 };
 
@@ -107,7 +136,7 @@ const elementClose = function(nameOrCtor) {
  * @return {void} Nothing.
  */
 const elementVoid = function(nameOrCtor, key, statics, var_args) {
-  elementOpen(nameOrCtor, key, statics, var_args);
+  elementOpen(nameOrCtor, key, statics, Array.prototype.slice.apply(arguments, [3, arguments.length]));
   return elementClose(nameOrCtor);
 };
 
@@ -125,8 +154,14 @@ const elementVoid = function(nameOrCtor, key, statics, var_args) {
  */
 const elementOpen = function(nameOrCtor, key, statics, var_args) {
   elementOpenStart(nameOrCtor, key, statics);
-  if (Array.isArray(var_args)) {
+
+
+  const hasVarArgs = Array.isArray(var_args);
+  if (hasVarArgs) {
     attrsArray_(var_args);
+  } else if (!hasVarArgs && arguments.length > 3) {
+    const dynamicAttrs = Array.prototype.slice.apply(arguments, [3, arguments.length]);
+    attrsArray_(dynamicAttrs);
   }
   return elementOpenEnd();
 };
@@ -175,6 +210,7 @@ const elementOpenStart = function(nameOrCtor, key, statics) {
  */
 const patch = function(node, description, data) {
   const fn = typeof description === 'function' ? description : noop;
+
   if (typeof node === 'function') {
     node(() => fn(data));
   } else {
@@ -182,7 +218,9 @@ const patch = function(node, description, data) {
   }
 
   const output = getOutput();
+  buffer_ = [];
   output_ = '';
+
   if (Object.prototype.hasOwnProperty.call(node, 'innerHTML')) {
     node.innerHTML = output;
   }
@@ -203,7 +241,6 @@ const patchInner = patch;
  */
 const text = function(value, var_args) {
   let formatted = value;
-
   if (Array.isArray(var_args)) {
     for (let v of var_args) {
       if (typeof v === 'function') {
@@ -211,10 +248,8 @@ const text = function(value, var_args) {
       }
     }
   }
-
   push_('' + formatted);
 };
-
 
 export {
   attr,
