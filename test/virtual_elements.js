@@ -189,6 +189,29 @@ describe('element creation', () => {
     assert.strictEqual(getOutput(true), '');
   });
 
+  it('should allow creating complex nodes', () => {
+
+    elementOpen('main', null, ['id', 'main-el']);
+      elementOpen('div');
+        elementOpen('span');
+          text('hello');
+          elementOpen('p');
+            elementVoid('a', null, ['href', 'http:\/\/liferay.com']);
+          elementClose('p');
+        elementClose('span');
+      elementVoid('a', null, ['href', 'http:\/\/www.wedeploy.com']);
+      elementClose('div');
+    elementClose('main');
+
+    const actual = getOutput();
+    const expected = ['<main id="main-el">',
+      '<div><span>hello<p><a href="http://liferay.com">',
+      '</a></p></span><a href="http://www.wedeploy.com">',
+      '</a></div></main>'].join('');
+
+    assert.strictEqual(actual, expected);
+  });
+
   describe('with patch', () => {
 
     let el = {innerHTML: ''};
