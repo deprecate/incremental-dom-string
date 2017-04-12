@@ -307,27 +307,4 @@ describe('element creation', () => {
       assert.strictEqual(matchData[1], 'bar');
     });
   });
-
-  describe('escaping attributes', () => {
-    let node;
-
-    beforeEach(() => {
-      node = {innerHTML: ''};
-    });
-
-    it('should escape < and >', () => {
-      patch(node, () => {
-        elementVoid('div', null, ['id', '<script src="bad.js"></script>']);
-      });
-      assert.notStrictEqual(node.innerHTML, '<div id="<script src="\bad.js\"></script>"></div>');
-    });
-
-    it('should escape &', () => {
-      patch(node, () => {
-        elementVoid('div', null, ['id', '&foo&bar']);
-      });
-      assert.strictEqual(node.innerHTML, '<div id="&amp;foo&amp;bar"></div>');
-    });
-  });
-
 });

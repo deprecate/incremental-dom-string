@@ -60,34 +60,6 @@ const attrsArray_ = function(data) {
   }
 };
 
-/**
- * A map of html entities to strings
- */
-const entities_ = {
-  '&':  '&amp;',
-  '<':  '&lt;',
-  '>':  '&gt;',
-  '\\': '&quot;',
-  '\'': '&#39;'
-};
-
-/**
- * Converts the given entity to the corresponding string.
- *
- * @param {string} str The string to convert.
- * @return {string} The entitie's corresponding string or the string itself
- *                  if nothing was found.
- */
-const convertEntity_ = str => entities_[str] || str;
-
-/**
- * Escapes entities for the given string.
- *
- * @param {string} str The string to convert.
- * @return {string} The escaped string.
- */
-const escapeTags_ = str => str.replace(/[&<>]/g, convertEntity_);
-
 /***
  * Defines a virtual attribute at this point of the DOM. This is only valid
  * when called between elementOpenStart and elementOpenEnd.
@@ -97,11 +69,6 @@ const escapeTags_ = str => str.replace(/[&<>]/g, convertEntity_);
  * @return {void} Nothing.
  */
 const attr = function(name, value) {
-
-  name = escapeTags_(name);
-  value = escapeTags_(value);
-
-
   push_(` ${name}="${value}"`);
 };
 
