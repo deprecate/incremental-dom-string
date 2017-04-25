@@ -26,6 +26,13 @@ describe('element creation', () => {
     return match;
   };
 
+  it('when creating a single node with formatted text', () => {
+    elementOpen('div');
+      text('Hello wor', (val) => val + 'l', (val) => val + 'd');
+    elementClose('div');
+    assert.strictEqual(getOutput(), '<div>Hello world</div>');
+  });
+
   it('when creating a single node with text', () => {
     elementOpen('div');
       text('Hello world');

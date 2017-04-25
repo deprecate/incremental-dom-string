@@ -208,12 +208,9 @@ const patchInner = patch;
  */
 const text = function(value, var_args) {
   let formatted = value;
-  if (Array.isArray(var_args)) {
-    for (let v of var_args) {
-      if (typeof v === 'function') {
-        formatted = v(formatted);
-      }
-    }
+  for (let i = 1; i < arguments.length; i += 1) {
+    const fn = arguments[i];
+    formatted = fn(formatted);
   }
   push_('' + formatted);
 };
