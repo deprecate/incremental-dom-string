@@ -62,7 +62,7 @@ describe('element creation', () => {
     assert.strictEqual(getOutput(), '<div id="test-div">Test text</div>');
   });
 
-  it('when creating a single node with multiple attributes', () => {
+  it('when creating a single node with multiple static attributes', () => {
     const attrs = [
       'id', 'test-id',
       'name', 'test-name',
@@ -75,6 +75,24 @@ describe('element creation', () => {
       'data-b="test-data-b">Some text</div>'].join(' ');
 
     elementOpen('div', null, attrs);
+      text('Some text');
+    elementClose('div');
+    assert.strictEqual(getOutput(), expected);
+  });
+
+  it('when creating a single node with multiple attributes', () => {
+    const attrs = [
+      'id', 'test-id',
+      'name', 'test-name',
+      'data-a', 'test-data-a',
+      'data-b', 'test-data-b'
+    ];
+
+    const expected = ['<div id="test-id" name="test-name"',
+      'data-a="test-data-a"',
+      'data-b="test-data-b">Some text</div>'].join(' ');
+
+    elementOpen('div', null, null, ...attrs);
       text('Some text');
     elementClose('div');
     assert.strictEqual(getOutput(), expected);
