@@ -77,6 +77,10 @@ const currentPointer = function() {
  * @return {void} Nothing.
  */
 const elementClose = function(nameOrCtor) {
+  if (typeof nameOrCtor === 'function') {
+    new nameOrCtor();
+    return;
+  }
   buffer.push(`</${nameOrCtor}>`);
 };
 
@@ -113,6 +117,11 @@ const elementVoid = function(nameOrCtor, key, statics, var_args) {
  * @return {void} Nothing.
  */
 const elementOpen = function(nameOrCtor, key, statics, var_args) {
+  if (typeof nameOrCtor === 'function') {
+    new nameOrCtor();
+    return;
+  }
+
   buffer.push(`<${nameOrCtor}`);
 
   if (statics) {
