@@ -33,16 +33,6 @@ const argsBuilder = [];
 let buffer = [];
 
 /**
- * Returns the constructred DOM string at this point.
- * @return {string} The constructed DOM string.
- */
-const getOutput = function() {
-  const result = buffer.join('');
-  buffer = [];
-  return result;
-};
-
-/**
  * Defines a virtual attribute at this point of the DOM. This is only valid
  * when called between elementOpenStart and elementOpenEnd.
  *
@@ -188,11 +178,9 @@ const elementOpenStart = function(nameOrCtor, key, statics) {
 const patch = function(node, fn, data) {
   currentParent = node;
   fn(data);
-  const result = getOutput();
-  if ('innerHTML' in node) {
-    node.innerHTML = result;
-  }
-  return node;
+  currentParent.innerHTML = buffer.join('');
+  buffer = [];
+  return currentParent;
 };
 
 const patchOuter = patch;
@@ -217,6 +205,15 @@ const text = function(value, var_args) {
   buffer.push(formatted);
 };
 
+/**
+ * Returns the constructred DOM string at this point.
+ * @return {string} The constructed DOM string.
+ */
+const renderToString = function(fn) {
+  let string = patch({}, fn).innerHTML;
+  return string;
+};
+
 export {
   attr,
   currentElement,
@@ -226,9 +223,9 @@ export {
   elementOpenEnd,
   elementOpenStart,
   elementVoid,
-  getOutput,
   patch,
   patchInner,
   patchOuter,
+  renderToString,
   text,
 };
