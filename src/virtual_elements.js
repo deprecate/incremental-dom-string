@@ -9,6 +9,9 @@ const truncateArray = function(arr, length) {
   }
 };
 
+/** @type {?Object} */
+let currentParent = null;
+
 /**
  * The offset in the virtual element declaration where the attributes are
  * specified.
@@ -50,6 +53,21 @@ const getOutput = function() {
 const attr = function(name, value) {
   argsBuilder.push(name);
   argsBuilder.push(value);
+};
+
+/**
+ * Gets the current Element being patched.
+ * @return {!Element}
+ */
+const currentElement = function() {
+  return currentParent;
+};
+
+/**
+ * @return {Node} The Node that will be evaluated for the next instruction.
+ */
+const currentPointer = function() {
+  return {};
 };
 
 /**
@@ -159,6 +177,7 @@ const elementOpenStart = function(nameOrCtor, key, statics) {
  * @return {void} Nothing.
  */
 const patch = function(node, fn, data) {
+  currentParent = node;
   fn(data);
   const result = getOutput();
   if ('innerHTML' in node) {
@@ -191,6 +210,8 @@ const text = function(value, var_args) {
 
 export {
   attr,
+  currentElement,
+  currentPointer,
   elementClose,
   elementOpen,
   elementOpenEnd,
