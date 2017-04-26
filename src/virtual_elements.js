@@ -210,8 +210,8 @@ const text = function(value, var_args) {
  * @return {string} The constructed DOM string.
  */
 const renderToString = function(fn) {
-  let string = patch({}, fn).innerHTML;
-  return string;
+  patch({}, fn);
+  return currentElement().innerHTML;
 };
 
 export {
