@@ -8,11 +8,10 @@ import {
   text,
   attr,
   patch,
-  getOutput
+  getOutput,
 } from '../src/virtual_elements.js';
 
 describe('element creation', () => {
-
   const findAttribute = (node, attr, check = true) => {
     const data = new RegExp(attr + '="(\\w+)"');
     const match = node.innerHTML.match(data);
@@ -74,7 +73,7 @@ describe('element creation', () => {
       'id', 'test-id',
       'name', 'test-name',
       'data-a', 'test-data-a',
-      'data-b', 'test-data-b'
+      'data-b', 'test-data-b',
     ];
 
     const expected = ['<div id="test-id" name="test-name"',
@@ -92,7 +91,7 @@ describe('element creation', () => {
       'id', 'test-id',
       'name', 'test-name',
       'data-a', 'test-data-a',
-      'data-b', 'test-data-b'
+      'data-b', 'test-data-b',
     ];
 
     const expected = ['<div id="test-id" name="test-name"',
