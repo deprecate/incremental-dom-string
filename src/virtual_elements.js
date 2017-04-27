@@ -109,7 +109,7 @@ const elementVoid = function(nameOrCtor, key, statics, var_args) {
 const elementOpen = function(nameOrCtor, key, statics, var_args) {
   if (typeof nameOrCtor === 'function') {
     new nameOrCtor();
-    return;
+    return currentParent;
   }
 
   buffer.push(`<${nameOrCtor}`);
@@ -132,6 +132,8 @@ const elementOpen = function(nameOrCtor, key, statics, var_args) {
   }
 
   buffer.push('>');
+
+  return currentParent;
 };
 
 /**
