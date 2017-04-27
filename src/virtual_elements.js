@@ -32,6 +32,12 @@ const argsBuilder = [];
  */
 let buffer = [];
 
+/** @const */
+const attributes = {};
+
+/** @const */
+const symbols = {'default': '__default'};
+
 /**
  * Defines a virtual attribute at this point of the DOM. This is only valid
  * when called between elementOpenStart and elementOpenEnd.
@@ -218,6 +224,7 @@ const renderToString = function(fn) {
 
 export {
   attr,
+  attributes,
   currentElement,
   currentPointer,
   elementClose,
@@ -229,5 +236,6 @@ export {
   patchInner,
   patchOuter,
   renderToString,
+  symbols,
   text,
 };
