@@ -24,7 +24,5 @@ console.log(output);
 where `output` would correspond to
 
 ```html
-<div>
-  Hello world
-</div>
+<div>Hello world</div>
 ```
