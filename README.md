@@ -2,19 +2,24 @@
 
 The DOM to be rendered is described with the incremental node functions, `elementOpen`, `elementClose` and `text`. For example, the following function:
 
-```js
-import {
-  elementOpen,
-  elementClose,
-  text,
-  renderToString
- } from 'incremental-dom-string';
+## Setup
 
-const output = renderToString(() => {
-  elementOpen('div');
-    text('Hello world');
-  elementClose('div');
+```
+npm install ---save incremental-dom-string
+```
+
+## Usage
+
+```js
+var IncrementalDOM = require('incremental-dom-string');
+
+const output = IncrementalDOM.renderToString(() => {
+  IncrementalDOM.elementOpen('div');
+    IncrementalDOM.text('Hello world');
+  IncrementalDOM.elementClose('div');
 });
+
+console.log(output);
 ```
 where `output` would correspond to
 
