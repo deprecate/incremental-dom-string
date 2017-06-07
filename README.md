@@ -5,7 +5,7 @@ The DOM to be rendered is described with the incremental node functions, `elemen
 ## Setup
 
 ```
-npm install ---save incremental-dom-string
+npm install --save incremental-dom-string
 ```
 
 ## Usage
