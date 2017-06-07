@@ -1,7 +1,5 @@
 # Incremental DOM string
 
-The DOM to be rendered is described with the incremental node functions, `elementOpen`, `elementClose` and `text`. For example, the following function:
-
 ## Setup
 
 ```
@@ -9,6 +7,8 @@ npm install --save incremental-dom-string
 ```
 
 ## Usage
+
+The DOM to be rendered is described with the incremental node functions, `elementOpen`, `elementClose` and `text`. For example, the following function:
 
 ```js
 var IncrementalDOM = require('incremental-dom-string');
