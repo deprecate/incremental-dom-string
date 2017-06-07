@@ -1,5 +1,7 @@
 # Incremental DOM string
 
+![](https://d3vv6lp55qjaqc.cloudfront.net/items/1l3o1p3n1l3P3e38391X/ics.gif)
+
 ## Setup
 
 ```
