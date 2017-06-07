@@ -1,6 +1,6 @@
 {
   "name": "incremental-dom-string",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "description": "Ability to render Incremental DOM virtual elements into strings on the server and the client.",
   "scripts": {
     "build": "gulp build",
@@ -11,6 +11,7 @@
   },
   "author": "Eduardo Lundgren <eduardolundgren@gmail.com>",
   "license": "BSD-3-Clause",
+  "main": "./dist/incremental-dom-string.js",
   "files": [
     "index.js",
     "dist",
@@ -18,7 +19,7 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/eduardolundgren/incremental-dom-string.git"
+    "url": "https://github.com/metal/incremental-dom-string.git"
   },
   "devDependencies": {
     "babel-preset-es2015": "^6.0.0",
