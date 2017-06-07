@@ -10,7 +10,7 @@ import {
   patch,
   renderToString,
   text,
-} from '../src/virtual_elements.js';
+} from '../index.js';
 
 describe('element creation', () => {
   const findAttribute = (node, attr, check = true) => {
