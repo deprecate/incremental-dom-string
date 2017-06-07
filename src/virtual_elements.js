@@ -1,3 +1,6 @@
+import {symbols} from './symbols.js';
+import {attributes, updateAttribute} from './attributes.js';
+
 /**
  * Truncates an array, removing items up until length.
  * @param {!Array<*>} arr The array to truncate.
@@ -31,12 +34,6 @@ const argsBuilder = [];
  * elementOpen, elementOpenStart, elementOpenEnd, elementEnd and elementVoid
  */
 let buffer = [];
-
-/** @const */
-const attributes = {};
-
-/** @const */
-const symbols = {'default': '__default'};
 
 /**
  * Defines a virtual attribute at this point of the DOM. This is only valid
@@ -124,7 +121,7 @@ const elementOpen = function(nameOrCtor, key, statics, var_args) {
     for (let i = 0; i < statics.length; i += 2) {
       const name = /** @type {string} */(statics[i]);
       const value = statics[i + 1];
-      buffer.push(` ${name}="${value}"`);
+      updateAttribute(buffer, name, value);
     }
   }
 
@@ -134,7 +131,7 @@ const elementOpen = function(nameOrCtor, key, statics, var_args) {
   for (; i < arguments.length; i += 2, j += 2) {
     const name = arguments[i];
     const value = arguments[i + 1];
-    buffer.push(` ${name}="${value}"`);
+    updateAttribute(buffer, name, value);
   }
 
   buffer.push('>');
@@ -215,6 +212,7 @@ const text = function(value, var_args) {
 
 /**
  * Returns the constructred DOM string at this point.
+ * @param {function} fn
  * @return {string} The constructed DOM string.
  */
 const renderToString = function(fn) {
