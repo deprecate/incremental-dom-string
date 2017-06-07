@@ -5,7 +5,7 @@ const attributes = {};
 
 /**
  * Calls the appropriate attribute mutator for this attribute.
- * @param {!Array.<string>} el Buffer representation of element attributes.
+ * @param {!Array.<string>} el Buffer to append element attributes.
  * @param {string} name The attribute's name.
  * @param {*} value The attribute's value.
  */
