@@ -9,19 +9,19 @@ const rollup = require('rollup-stream');
 const source = require('vinyl-source-stream');
 
 gulp.task('build', ['clean'], () =>
-    rollup({
-      entry: 'index.js',
-      plugins: [
-        babel({
-          exclude: 'node_modules/**'
-        }),
-      ],
-      format: 'umd',
-      moduleName: 'IncrementalDOM',
-    })
-    .pipe(source('incremental-dom-string.js'))
-    .pipe(buffer())
-    .pipe(gulp.dest('dist')));
+  rollup({
+    entry: 'index.js',
+    plugins: [
+      babel({
+        exclude: 'node_modules/**'
+      }),
+    ],
+    format: 'umd',
+    moduleName: 'IncrementalDOM',
+  })
+  .pipe(source('incremental-dom-string.js'))
+  .pipe(buffer())
+  .pipe(gulp.dest('dist')));
 
 gulp.task('build:watch', () =>
   gulp.watch('src/*.js', ['build']));
