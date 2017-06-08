@@ -13,6 +13,14 @@ gulp.task('build', ['clean'], () =>
     entry: 'index.js',
     plugins: [
       babel({
+        presets: [
+          [
+            "es2015",
+            {
+              "modules": false
+            }
+          ]
+        ],
         exclude: 'node_modules/**'
       }),
     ],
