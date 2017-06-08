@@ -1,6 +1,6 @@
 {
   "name": "incremental-dom-string",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Ability to render Incremental DOM virtual elements into strings on the server and the client.",
   "scripts": {
     "build": "gulp build",
